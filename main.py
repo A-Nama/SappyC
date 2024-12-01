@@ -77,12 +77,12 @@ if 'show_comments' in st.session_state and st.session_state.show_comments:
 # Show selected meme and comment
 if 'selected_comment' in st.session_state:
     st.markdown(
-        f"<h2 style='text-align: center; color: #ff69b4;'>You chose: {st.session_state.selected_comment}</h2>",
+        f"<h2 style='text-align: center; color: #68056d;'>You chose: {st.session_state.selected_comment}</h2>",
         unsafe_allow_html=True
     )
     st.image(st.session_state.selected_meme, use_container_width=True)
     st.markdown(
-        "<h3 style='text-align: center; color: #ff69b4;'>POST IT IF YOU DARE! 😜🔥</h3>",
+        "<h3 style='text-align: center; color: #68056d;'>POST IT IF YOU DARE! 😜🔥</h3>",
         unsafe_allow_html=True
     )
 

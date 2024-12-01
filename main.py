@@ -26,10 +26,7 @@ if 'start' not in st.session_state:
     st.session_state.start = False
 
 if not st.session_state.start:
-    st.markdown(
-        "<h1 style='text-align: center; color: #ff69b4;'>SappyC: Piss people off on LinkedIn, one sappy comment at a time! 💀</h1>",
-        unsafe_allow_html=True
-    )
+    st.markdown("<h1 style='text-align: center; color: #68056d; font-family: 'Orbitron'>SappyC: Piss people off on LinkedIn, one sappy comment at a time! 😈</h1>",unsafe_allow_html=True)
     if st.button("START THE CHAOS"):
         st.session_state.start = True
         st.rerun()

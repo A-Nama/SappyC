@@ -33,9 +33,12 @@ if st.session_state.start:
     
     # Show the comment options and memes
     memes = [
-        "https://i.pinimg.com/originals/a2/84/7a/a2847a02c6c04660d4a0cc1f9cc12a13.jpg",  # meme 1
-        "https://i.pinimg.com/originals/39/f1/f9/39f1f9b67cfedfdedb849547b2881c69.jpg",  # meme 2
-        "https://i.pinimg.com/originals/8b/cd/4d/8bcd4dcd253a04054c87fd6fa58d9a50.jpg",  # meme 3
+        "https://i.imgur.com/pYXEZUx.jpeg",  # meme 1
+        "https://i.imgur.com/dexoU4c.jpeg",  # meme 2
+        "https://i.imgur.com/HS8s8v8.jpeg",  # meme 3
+        "https://i.imgur.com/HItmwIS.jpeg", # meme 4
+        "https://i.imgur.com/eFtAffb.jpeg", # meme 5
+        "https://i.imgur.com/r1m8dN0.jpeg", # meme 6
     ]
     
     selected_meme = random.choice(memes)

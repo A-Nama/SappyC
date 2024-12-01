@@ -1,46 +1,36 @@
 from flask import Flask, request, jsonify
-from linkedin_api import Linkedin
+from scraper import linkedin_login, get_connections_posts, close_driver
+from gemini_api import generate_comments
 
 app = Flask(__name__)
 
-# Store active LinkedIn sessions (username as key)
-active_sessions = {}
+sessions = {}  # Active LinkedIn sessions
 
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
-    username = data.get('username')
-    password = data.get('password')
-
-    if not username or not password:
-        return jsonify({"error": "Username and password are required"}), 400
-
+    username = data['username']
+    password = data['password']
+    
     try:
-        # Authenticate with LinkedIn
-        linkedin = Linkedin(username, password)
-        active_sessions[username] = linkedin  # Save session in memory
-        return jsonify({"message": "Login successful!"}), 200
+        driver = linkedin_login(username, password)
+        sessions[username] = driver
+        return jsonify({"message": "Logged in successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 
 @app.route('/get_posts', methods=['POST'])
 def get_posts():
     data = request.json
-    username = data.get('username')
-
-    linkedin = active_sessions.get(username)
-    if not linkedin:
-        return jsonify({"error": "Invalid session. Please log in again."}), 403
-
+    username = data['username']
+    
+    driver = sessions.get(username)
+    if not driver:
+        return jsonify({"error": "Session expired or not valid."}), 403
+    
     try:
-        posts = linkedin.get_feed_updates(limit=5)
-        response = {
-            "posts": [
-                {"id": post['entityUrn'], "content": post.get('commentary', 'No Content')}
-                for post in posts
-            ]
-        }
-        return jsonify(response), 200
+        posts = get_connections_posts(driver)
+        return jsonify({"posts": posts}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -49,9 +39,22 @@ def generate_comment():
     data = request.json
     post_content = data.get('content')
 
-    # Simulate GPT-Generated comment
-    comment = f"This is so inspiring! 🚀🔥 - [Auto-comment on: {post_content}]"
-    return jsonify({"comment": comment})
+    try:
+        comments = generate_comments(post_content)
+        return jsonify({"comments": comments}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
+@app.route('/logout', methods=['POST'])
+def logout():
+    data = request.json
+    username = data['username']
+    
+    driver = sessions.pop(username, None)
+    if driver:
+        close_driver(driver)
+        return jsonify({"message": "Logged out"}), 200
+    return jsonify({"error": "No active session found"}), 403
+
+if __name__ == "__main__":
     app.run(debug=True, port=5000)

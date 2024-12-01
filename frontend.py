@@ -6,7 +6,7 @@ LOGIN_URL = "http://localhost:5000/login"
 GET_POSTS_URL = "http://localhost:5000/get_posts"
 GENERATE_COMMENT_URL = "http://localhost:5000/generate_comment"
 
-st.title("Welcome to SappyC : your LinkedIn sappy comment service!")
+st.title("Welcome to SappyC: LinkedIn Sappy Comment Service")
 
 # Sidebar for login
 st.sidebar.header("Login")
@@ -27,10 +27,13 @@ if username and password:
         posts = posts_response.json().get("posts", [])
         for post in posts:
             st.subheader(f"Post: {post['content']}")
-            if st.button(f"Generate Comment for Post {post['id']}"):
+            if st.button(f"Generate Comments for Post {post['id']}"):
                 comment_response = requests.post(GENERATE_COMMENT_URL, json={"content": post['content']})
                 if comment_response.status_code == 200:
-                    comment = comment_response.json().get("comment")
-                    st.success(comment)
+                    comments = comment_response.json().get("comments", [])
+                    for i, comment in enumerate(comments):
+                        st.radio(f"Choose comment {i+1}:", [comment], index=0)
+                else:
+                    st.error("Failed to generate comments.")
     else:
         st.error("Failed to fetch posts. Please log in again.")

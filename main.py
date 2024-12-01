@@ -6,13 +6,30 @@ import random
 # Set up a fun title with centered text
 st.set_page_config(page_title="SappyC", page_icon="💬", layout="centered")
 
+# Add a background image using CSS
+st.markdown(
+        """
+        <style>
+        .stApp {
+            background-image: url("https://i.imgur.com/QTmfJ5w.jpeg");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+
 # Step 1: Welcome message and start button
 if 'start' not in st.session_state:
     st.session_state.start = False
 
 if not st.session_state.start:
     st.markdown(
-        "<h1 style='text-align: center; color: #ff69b4;'>Welcome to SappyC: Your favorite sappy comment generator for the hellish landscape of LinkedIn! 💀</h1>", 
+        "<h1 style='text-align: center; color: #ff69b4;'>SappyC: Piss people off on LinkedIn, one sappy comment at a time! 💀</h1>", 
         unsafe_allow_html=True
     )
     if st.button("START THE CHAOS"):
@@ -63,5 +80,7 @@ if 'selected_comment' in st.session_state:
         unsafe_allow_html=True
     )
     if st.button("Retry?"):
-        st.session_state.start = False
+        st.session_state.pop('selected_comment', None)
+        st.session_state.pop('selected_meme', None)
+        st.session_state.start = False  # Reset to the start screen
         st.rerun()

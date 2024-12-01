@@ -3,28 +3,44 @@ from linkedin_api import Linkedin
 
 app = Flask(__name__)
 
-# Login with LinkedIn credentials (hardcoded for simplicity, can be environment variables in production)
-LINKEDIN_USERNAME = "your-email@example.com"
-LINKEDIN_PASSWORD = "your-password"
-linkedin = Linkedin(LINKEDIN_USERNAME, LINKEDIN_PASSWORD)
+# Store active LinkedIn sessions (username as key)
+active_sessions = {}
 
-@app.route('/get_posts', methods=['GET'])
-def get_posts():
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
     try:
-        # Get user token from frontend (if token-based setup needed later)
-        user_token = request.headers.get('Authorization')
+        # Authenticate with LinkedIn
+        linkedin = Linkedin(username, password)
+        active_sessions[username] = linkedin  # Save session in memory
+        return jsonify({"message": "Login successful!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 401
 
-        # Simulate fetching posts from the user's feed
-        user_profile = linkedin.get_profile(LINKEDIN_USERNAME)  # Retrieve user profile to verify
-        posts = linkedin.get_feed_updates(limit=5)  # Fetch the latest 5 posts from feed
-        
+@app.route('/get_posts', methods=['POST'])
+def get_posts():
+    data = request.json
+    username = data.get('username')
+
+    linkedin = active_sessions.get(username)
+    if not linkedin:
+        return jsonify({"error": "Invalid session. Please log in again."}), 403
+
+    try:
+        posts = linkedin.get_feed_updates(limit=5)
         response = {
             "posts": [
                 {"id": post['entityUrn'], "content": post.get('commentary', 'No Content')}
                 for post in posts
             ]
         }
-        return jsonify(response)
+        return jsonify(response), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
